@@ -1,12 +1,12 @@
 package com.darktornado.cardbalancechecker;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.nfc.tech.NfcF;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import com.darktornado.library.ICCard;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private LinearLayout layout;
     private NfcAdapter adapter;
