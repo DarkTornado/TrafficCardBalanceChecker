@@ -3,11 +3,16 @@ package com.darktornado.cardbalancechecker;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.nfc.tech.NfcF;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -35,6 +40,12 @@ public class MainActivity extends Activity {
                 " - 일본 : Suica 및 상호호환카드");
         layout.addView(txt);
 
+        TextView maker = new TextView(this);
+        maker.setText("\n© 2023-2024 Dark Tornado, All rights reserved.\n");
+        maker.setTextSize(13);
+        maker.setGravity(Gravity.CENTER);
+        layout.addView(maker);
+
         int pad = dip2px(16);
         layout.setPadding(pad, pad, pad, pad);
         ScrollView scroll = new ScrollView(this);
@@ -46,15 +57,39 @@ public class MainActivity extends Activity {
         this.intent = PendingIntent.getActivity(this, 0, intent, 0);
     }
 
-    private void applyData(ICCard card) {
+    private void applyData(String type, String balance, String cardId, Bitmap bitmap) {
         layout.removeAllViews();
+
         ImageView image = new ImageView(this);
+        image.setAdjustViewBounds(true);
+        image.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        if (bitmap != null) image.setImageBitmap(bitmap);
         layout.addView(image);
-        TextView txt = new TextView(this);
-        txt.setText("종류 : " + card.type + "\n" +
-                "잔액 : " + card.balance + "원\n" +
-                "카드번호 : " + card.number);
-        layout.addView(txt);
+        int pad = dip2px(16);
+        image.setPadding(pad, pad, pad, pad);
+
+        WebView web = new WebView(this);
+        final StringBuilder result = new StringBuilder("<meta name='viewport' content='user-scalable=no width=device-width' />")
+                .append("<style>table{border: 1px solid #000000;border-collapse: collapse;}td{padding:5px;font-size:18px}</style>")
+                .append("<table width=100% border=1>")
+                .append("<tr align=center><td><b>종류</b></td><td>" + type + "</td></tr>")
+                .append("<tr align=center><td><b>잔액</b></td><td>" + balance + "</td></tr>")
+                .append("<tr align=center><td><b>카드번호</b></td><td>" + cardId + "</td></tr>")
+                .append("</table>");
+
+        if (Build.VERSION.SDK_INT > 23) {
+            web.loadDataWithBaseURL(null, result.toString(), "text/html; charset=UTF-8", null, null);
+        } else {
+            web.loadData(result.toString(), "text/html; charset=UTF-8", null);
+        }
+        web.setBackgroundColor(0);
+        layout.addView(web);
+
+        TextView maker = new TextView(this);
+        maker.setText("\n© 2023-2024 Dark Tornado, All rights reserved.\n");
+        maker.setTextSize(13);
+        maker.setGravity(Gravity.CENTER);
+        layout.addView(maker);
     }
 
 
@@ -70,14 +105,27 @@ public class MainActivity extends Activity {
 
             if (id != null) { //한국 교통카드
                 ICCard card = new ICCard(id);
-                applyData(card);
+                Bitmap bitmap = null;
+                switch (card.type) {  //근데, switch 사용해도 문자열 비교라서 어차피 컴파일하면 모든 case 안에 if문 들어감. (hashcode로 switch 실행 후 일치하면 if로 다시 비교)
+                    case "티머니":
+                        bitmap = BitmapFactory.decodeStream(getAssets().open("tmoney.png"));
+                        break;
+                    case "캐시비":
+                        bitmap = BitmapFactory.decodeStream(getAssets().open("cashbee.png"));
+                        break;
+                    case "레일플러스":
+                        bitmap = BitmapFactory.decodeStream(getAssets().open("railplus.png"));
+                        break;
+                }
+                String cardId = card.number.substring(0, 4) + " " + card.number.substring(4, 8) + " " + card.number.substring(8, 12) + " " + card.number.substring(12, 16);
+                applyData(card.type, card.balance+"원", cardId, bitmap);
             }
             else if (nf != null && tag.getId() != null) { //일본 교통카드
 //                FeliCa fc = new FeliCa(nf, tag.getId());
 //                applyResultJP(fc);
             }
             else {
-                toast("아직 처리할 수 없는 카드에요");
+                toast("이 앱에서는 처리할 수 없는 카드에요");
             }
 
         } catch (Exception e) {
