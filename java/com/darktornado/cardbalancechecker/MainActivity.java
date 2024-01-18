@@ -72,9 +72,9 @@ public class MainActivity extends Activity {
         final StringBuilder result = new StringBuilder("<meta name='viewport' content='user-scalable=no width=device-width' />")
                 .append("<style>table{border: 1px solid #000000;border-collapse: collapse;}td{padding:5px;font-size:18px}</style>")
                 .append("<table width=100% border=1>")
-                .append("<tr align=center><td><b>종류</b></td><td>" + type + "</td></tr>")
-                .append("<tr align=center><td><b>잔액</b></td><td>" + balance + "</td></tr>")
-                .append("<tr align=center><td><b>카드번호</b></td><td>" + cardId + "</td></tr>")
+                .append("<tr align=center><td><b>종류</b></td><td>").append(type).append("</td></tr>")
+                .append("<tr align=center><td><b>잔액</b></td><td>").append(balance).append("</td></tr>")
+                .append("<tr align=center><td><b>카드번호</b></td><td>").append(cardId).append("</td></tr>")
                 .append("</table>");
 
         if (Build.VERSION.SDK_INT > 23) {
