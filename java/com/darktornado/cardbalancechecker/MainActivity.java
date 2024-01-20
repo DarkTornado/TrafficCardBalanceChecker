@@ -19,6 +19,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.darktornado.library.FeliCa;
 import com.darktornado.library.ICCard;
 
 public class MainActivity extends Activity {
@@ -34,7 +35,7 @@ public class MainActivity extends Activity {
         layout.setOrientation(1);
 
         TextView txt = new TextView(this);
-        txt.setText("스마트폰의 NFC 기능을 활성화시키고, 스마트폰 뒷면에 교통카드를 태그해주세요.\n\n" +
+        txt.setText("스마트폰의 NFC 기능을 기본 모드로 활성화시키고, 스마트폰 뒷면에 교통카드를 태그해주세요.\n\n" +
                 "[사용 가능 카드 목록]\n" +
                 " - 한국 : 티머니, 캐시비, 레일플러스\n" +
                 " - 일본 : Suica 및 상호호환카드");
@@ -121,8 +122,8 @@ public class MainActivity extends Activity {
                 applyData(card.type, card.balance+"원", cardId, bitmap);
             }
             else if (nf != null && tag.getId() != null) { //일본 교통카드
-//                FeliCa fc = new FeliCa(nf, tag.getId());
-//                applyResultJP(fc);
+                FeliCa card = new FeliCa(nf, tag.getId());
+                applyData("Suica 계열", card.balance+"원", card.id, BitmapFactory.decodeStream(getAssets().open("suica.png")));
             }
             else {
                 toast("이 앱에서는 처리할 수 없는 카드에요");
