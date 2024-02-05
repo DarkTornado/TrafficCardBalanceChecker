@@ -2,3 +2,8 @@
 © 2024 Dark Tornado, All rights reserved.
 
 - Balance Checker App on Android for Traffic Card in Korea and Japan.
+- Supports Cards
+  - T Money
+  - Cashbee
+  - Railplus
+  - Suica
